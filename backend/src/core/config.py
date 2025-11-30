@@ -1,12 +1,8 @@
 from pydantic_settings import BaseSettings
+server = r'DESKTOP-0IQFQ1V\SQLEXPRESS'  
+database = 'smart_city'
+DATABASE_URL = f"mssql+pyodbc://@{server}/{database}?driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes"
 
-DATABASE_URL = (
-    "mssql+pyodbc:///?odbc_connect="
-    "Driver={ODBC Driver 17 for SQL Server};"
-    "Server=(localdb)\\smart_city;"
-    "Database=smart_city;"
-    "Trusted_Connection=yes;"
-)
 
 class Settings(BaseSettings):
     APP_NAME: str = "PM BDD Backend"

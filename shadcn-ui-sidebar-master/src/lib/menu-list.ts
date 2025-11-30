@@ -1,5 +1,6 @@
 import {
   Tag,
+  Skull,
   Users,
   Settings,
   Bookmark,
@@ -43,29 +44,30 @@ export function getMenuList(pathname: string): Group[] {
     {
       groupLabel: "Contents",
       menus: [
+        
         {
-          href: "",
-          label: "Posts",
-          icon: SquarePen,
-          submenus: [
-            {
-              href: "/posts",
-              label: "All Posts"
-            },
-            {
-              href: "/posts/new",
-              label: "New Post"
-            }
-          ]
+          href: "/pollution",
+          label: "Pollution",
+          icon: Skull
         },
         {
-          href: "/categories",
-          label: "Categories",
-          icon: Bookmark
+          href: "/capteur",
+          label: "Capteurs",
+          icon: Tag
         },
         {
-          href: "/tags",
-          label: "Tags",
+          href: "/citoyen",
+          label: "Citoyens",
+          icon: Tag
+        },
+        {
+          href: "/intervention",
+          label: "Interventions",
+          icon: Tag
+        },
+        {
+          href: "/vehicule",
+          label: "Vehicules",
           icon: Tag
         }
       ]

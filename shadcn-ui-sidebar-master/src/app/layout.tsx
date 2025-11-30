@@ -2,7 +2,7 @@ import AdminPanelLayout from "@/components/admin-panel/admin-panel-layout";
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 
-import "./globals.css";
+import "@/app/globals.css";
 
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
