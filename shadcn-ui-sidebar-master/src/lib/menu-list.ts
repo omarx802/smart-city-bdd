@@ -1,12 +1,12 @@
 import {
-  Tag,
   Skull,
   Users,
   Settings,
-  Bookmark,
-  SquarePen,
   LayoutGrid,
-  LucideIcon
+  LucideIcon,
+  Car,
+  Axe,
+  Siren
 } from "lucide-react";
 
 type Submenu = {
@@ -34,7 +34,7 @@ export function getMenuList(pathname: string): Group[] {
       groupLabel: "",
       menus: [
         {
-          href: "/dashboard",
+          href: "/",
           label: "Dashboard",
           icon: LayoutGrid,
           submenus: []
@@ -53,22 +53,22 @@ export function getMenuList(pathname: string): Group[] {
         {
           href: "/capteur",
           label: "Capteurs",
-          icon: Tag
+          icon: Siren
         },
         {
           href: "/citoyen",
           label: "Citoyens",
-          icon: Tag
+          icon: Users
         },
         {
           href: "/intervention",
           label: "Interventions",
-          icon: Tag
+          icon: Axe
         },
         {
           href: "/vehicule",
           label: "Vehicules",
-          icon: Tag
+          icon: Car
         }
       ]
     },

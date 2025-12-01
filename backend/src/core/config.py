@@ -10,5 +10,4 @@ class Settings(BaseSettings):
     DATABASE_URL: str = DATABASE_URL
 
 def get_settings() -> Settings:
-    print("DATABASE URL:", DATABASE_URL)
     return Settings()

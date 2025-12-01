@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 
 from src.core.database import SessionLocal
-from src.models import Capteur
-from src.schemas import CapteurRead
+from src.models import Capteur,intervention,citoyen,vehicule
+from src.schemas import CapteurRead, intervRead,citoyenRead,vehiculeRead
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -31,10 +31,64 @@ def get_capteurs(db: Session = Depends(get_db)):
     return db.query(Capteur).all()
 
 
-# Get single capteur by UUID
-@app.get("/capteurs/{uuid}", response_model=CapteurRead)
-def get_capteur(uuid: UUID, db: Session = Depends(get_db)):
-    capteur = db.query(Capteur).filter(Capteur.uuid == uuid.bytes).first()
-    if not capteur:
-        raise HTTPException(status_code=404, detail="Capteur not found")
-    return capteur
+
+
+@app.get("/capteurs/dispo")
+def disponibilite_par_location(db: Session = Depends(get_db)):
+
+    # récupérer TOUS les capteurs (actifs + non actifs)
+    tous_capteurs = db.query(Capteur).all()
+
+    # préparer regroupement
+    result = {}
+
+    for c in tous_capteurs:
+        loc = c.location
+
+        # si la location n'existe pas encore → on initialise
+        if loc not in result:
+            result[loc] = {
+                "total_capteurs": 0,
+                "capteurs_actifs": 0,
+                "taux": 0,   # sera calculé après
+                "capteurs": []             # liste des capteurs actifs uniquement
+            }
+
+        # on compte tout
+        result[loc]["total_capteurs"] += 1
+
+        # si actif → on ajoute
+        if c.statut == "actif":
+            result[loc]["capteurs_actifs"] += 1
+
+            result[loc]["capteurs"].append({
+                "uuid": c.uuid,
+                "type": c.type,
+                "statut": c.statut,
+                "nom_prop": c.nom_prop,
+                "addresse_prop": c.addresse_prop,
+                "telephone_prop": c.telephone_prop,
+                "email_prop": c.email_prop,
+                "date_install": c.date_install
+            })
+
+    # calcul du taux de disponibilité
+    for loc, data in result.items():
+        if data["total_capteurs"] > 0:
+            data["taux"] = round(
+                (data["capteurs_actifs"] / data["total_capteurs"]) * 100, 2
+            )
+
+    return result
+@app.get("/interventions", response_model=list[intervRead])
+def get_interv(db: Session = Depends(get_db)):
+    return db.query(intervention).all()
+
+@app.get("/citoyens", response_model=list[citoyenRead])
+def get_interv(db: Session = Depends(get_db)):
+    return db.query(citoyen).all()
+
+
+@app.get("/vehicules", response_model=list[vehiculeRead])
+def get_interv(db: Session = Depends(get_db)):
+    return db.query(vehicule).all()
