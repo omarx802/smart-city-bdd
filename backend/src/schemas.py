@@ -1,6 +1,6 @@
 from pydantic import BaseModel
-from uuid import UUID
 from datetime import date
+
 
 class CapteurRead(BaseModel):
     uuid: str
@@ -15,6 +15,8 @@ class CapteurRead(BaseModel):
 
     class Config:
         orm_mode = True
+
+
 class intervRead(BaseModel):
     id_interv: int
     time_interv: str
@@ -28,6 +30,7 @@ class intervRead(BaseModel):
     class Config:
         orm_mode = True
 
+
 class citoyenRead(BaseModel):
     id: int
     nom_cit: str
@@ -38,6 +41,8 @@ class citoyenRead(BaseModel):
 
     class Config:
         orm_mode = True
+
+
 class vehiculeRead(BaseModel):
     plaque: int
     type: str
