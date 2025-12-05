@@ -44,4 +44,12 @@ class vehicule(Base):
     type = Column(String(50), nullable=False)
     energie = Column(DECIMAL(10,2), nullable=False)
 
+class trajet(Base):
+    __tablename__ = "trajet"
 
+    id_trajet = Column(Integer, primary_key=True, index=True)
+    plaque = Column(String(50), nullable=False)
+    origine = Column(String(50), nullable=False)
+    dest = Column(String(50), nullable=False)
+    duree = Column(String(50), nullable=False)
+    eco_c = Column(DECIMAL(10,2), nullable=False)

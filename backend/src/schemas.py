@@ -14,7 +14,7 @@ class CapteurRead(BaseModel):
     date_install: date | None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class intervRead(BaseModel):
@@ -28,7 +28,7 @@ class intervRead(BaseModel):
     tech_valide: str | None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class citoyenRead(BaseModel):
@@ -40,7 +40,7 @@ class citoyenRead(BaseModel):
     preference: str | None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class vehiculeRead(BaseModel):
@@ -49,4 +49,14 @@ class vehiculeRead(BaseModel):
     energie: float
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+class trajetRead(BaseModel):
+    id_trajet: int
+    plaque: str | None
+    origine: str | None
+    dest: str | None
+    duree: str | None
+    eco_c: float | None
+    class Config:
+        from_attributes = True

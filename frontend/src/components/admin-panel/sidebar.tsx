@@ -44,7 +44,7 @@ export function Sidebar() {
                   : "translate-x-0 opacity-100"
               )}
             >
-              smart city
+              Neo-Sousse 2030
             </h1>
           </Link>
         </Button>

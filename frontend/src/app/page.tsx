@@ -1,14 +1,17 @@
 "use client";
-import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, LabelList } from "recharts";
+import { TrendingUp  } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, LabelList, RadialBarChart, RadialBar } from "recharts";
 import {
+  CardAction,
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
+  
 } from "@/components/ui/card";
+import { Badge } from "lucide-react";
 import {
   ChartConfig,
   ChartContainer,
@@ -31,14 +34,34 @@ import { useStore } from "@/hooks/use-store";
 
 export const description = "Sensor availability rate by location";
 
-const chartData1 = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-]
+
+export const description2 = "A radial chart with a label"
+
+const chartConfig2 = {
+  visitors: {
+    label: "Visitors",
+  },
+  chrome: {
+    label: "Chrome",
+    color: "var(--chart-1)",
+  },
+  safari: {
+    label: "Safari",
+    color: "var(--chart-2)",
+  },
+  firefox: {
+    label: "Firefox",
+    color: "var(--chart-3)",
+  },
+  edge: {
+    label: "Edge",
+    color: "var(--chart-4)",
+  },
+  other: {
+    label: "Other",
+    color: "var(--chart-5)",
+  },
+} satisfies ChartConfig
 
 
 const chartConfig = {
@@ -63,6 +86,57 @@ const chartConfig1 = {
 } satisfies ChartConfig
 
 export default function DashboardPage() {
+  const [chartData1, setChartData1] = useState([]);
+
+  useEffect(() => {
+    const fetchTop5 = async () => {
+      const res = await fetch("http://127.0.0.1:8000/citoyens/top5");
+      const data = await res.json();
+
+
+    setChartData1(data); // Directement utilisable par Recharts
+  };
+
+  fetchTop5();
+}, []);
+
+  const [chartData2, setChartData2] = useState([]);
+
+  useEffect(() => {
+    const fetchTrajet = async () => {
+      const res = await fetch("http://127.0.0.1:8000/trajets/eco");
+      const data = await res.json();
+    const formatted2 = data.map((item) => ({
+      browser: item.origine + " → " + item.dest,  // label
+      visitors: item.eco_c                        // valeur
+    }));
+
+    setChartData2(formatted2); // Directement utilisable par Recharts
+  };
+
+  fetchTrajet();
+}, []);
+
+  const [Interv, setTotInterv] = useState([]);
+  const [cout, setTotCout] = useState([]);
+
+
+useEffect(() => {
+  const fetchInterv = async () => {
+    const res = await fetch("http://127.0.0.1:8000/interventions/pred");
+    const data = await res.json();
+
+    // data = [{ tot_interv: 2, tot_cout: 213 }]
+    if (data.length > 0) {
+      setTotInterv(data[0].tot_interv);
+      setTotCout(data[0].tot_cout);
+    }
+  };
+
+  fetchInterv();
+}, []);
+
+
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
@@ -81,7 +155,6 @@ export default function DashboardPage() {
 
     fetchData();
   }, []);
-
   const sidebar = useStore(useSidebar, (x) => x);
   if (!sidebar) return null;
 
@@ -141,7 +214,7 @@ export default function DashboardPage() {
 
       <Card>
       <CardHeader>
-        <CardTitle>Bar Chart - Custom Label</CardTitle>
+        <CardTitle>Citoyens les plus engages</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent>
@@ -156,40 +229,37 @@ export default function DashboardPage() {
           >
             <CartesianGrid horizontal={false} />
             <YAxis
-              dataKey="month"
+              dataKey="nom_cit"
               type="category"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
               hide
             />
-            <XAxis dataKey="desktop" type="number" hide />
+
+            <XAxis dataKey="score" type="number" hide />
+
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
             />
-            <Bar
-              dataKey="desktop"
-              layout="vertical"
-              fill="var(--color-desktop)"
-              radius={4}
-            >
+            <Bar dataKey="score" layout="vertical" radius={4}>
               <LabelList
-                dataKey="month"
+                dataKey="nom_cit"
                 position="insideLeft"
                 offset={8}
-                className="fill-(--color-label)"
+                className="fill-foreground"
                 fontSize={12}
               />
               <LabelList
-                dataKey="desktop"
+                dataKey="score"
                 position="right"
                 offset={8}
                 className="fill-foreground"
                 fontSize={12}
               />
             </Bar>
+
           </BarChart>
         </ChartContainer>
       </CardContent>
@@ -202,6 +272,77 @@ export default function DashboardPage() {
         </div>
       </CardFooter>
     </Card>
+
+
+      <Card className="@container/card">
+        <CardHeader>
+          <CardDescription>Total Revenue</CardDescription>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            ${cout}
+          </CardTitle>
+          <CardAction>
+            <Badge variant="outline">
+              <TrendingUp />
+              {Interv}
+            </Badge>
+          </CardAction>
+        </CardHeader>
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
+            Trending up this month <TrendingUp className="size-4" />
+          </div>
+          <div className="text-muted-foreground">
+            Visitors for the last {Interv} months
+          </div>
+        </CardFooter>
+      </Card>
+
+
+
+    <Card className="flex flex-col">
+      <CardHeader className="items-center pb-0">
+        <CardTitle>Trajets plus ecolo</CardTitle>
+        <CardDescription>January - June 2024</CardDescription>
+      </CardHeader>
+      <CardContent className="flex-1 pb-0">
+        <ChartContainer
+          config={chartConfig2}
+          className="mx-auto aspect-square max-h-[250px]"
+        >
+          <RadialBarChart
+            data={chartData2}
+            startAngle={-90}
+            endAngle={380}
+            innerRadius={30}
+            outerRadius={110}
+          >
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel nameKey="browser" />}
+            />
+
+            <RadialBar dataKey="visitors" background>
+              <LabelList
+                position="insideStart"
+                dataKey="browser"
+                className="fill-white capitalize mix-blend-luminosity"
+                fontSize={11}
+              />
+            </RadialBar>
+          </RadialBarChart>
+
+        </ChartContainer>
+      </CardContent>
+      <CardFooter className="flex-col gap-2 text-sm">
+        <div className="flex items-center gap-2 leading-none font-medium">
+          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+        </div>
+        <div className="text-muted-foreground leading-none">
+          Showing total visitors for the last 6 months
+        </div>
+      </CardFooter>
+    </Card>
+  
 
 
     </ContentLayout>

@@ -1,9 +1,11 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from src.core.database import SessionLocal
-from src.models import Capteur, intervention, citoyen, vehicule
-from src.schemas import CapteurRead, intervRead, citoyenRead, vehiculeRead
+from sqlalchemy import text, extract
+from src.core.database import SessionLocal 
+from src.models import Capteur, intervention, citoyen, vehicule, trajet
+from src.schemas import CapteurRead, intervRead, citoyenRead, vehiculeRead, trajetRead
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime
 
 
 app = FastAPI()
@@ -76,12 +78,80 @@ def disponibilite_par_location(db: Session = Depends(get_db)):
 def get_interv(db: Session = Depends(get_db)):
     return db.query(intervention).all()
 
+@app.get("/interventions/pred")
+def get_interv_cout_nature(db: Session = Depends(get_db)):
+    now = datetime.now()
+
+    result = db.query(
+        intervention.nature_interv,
+        intervention.cout
+    ).filter(
+        extract("month", intervention.time_interv) == now.month,
+        extract("year", intervention.time_interv) == now.year
+    ).all()
+    tot_interv=0
+    tot_cout=0
+    for row in result:
+        if row.nature_interv == 'predictive':
+            tot_interv += 1
+            tot_cout += row.cout
+    return [
+        {
+            "tot_interv": tot_interv,
+            "tot_cout": tot_cout
+            }
+    ]
+
 
 @app.get("/citoyens", response_model=list[citoyenRead])
 def get_interv(db: Session = Depends(get_db)):
     return db.query(citoyen).all()
 
+@app.get("/citoyens/top5")
+def top_5_citoyens():
+    db = SessionLocal()
+
+    result = db.execute(text("""
+        SELECT TOP 5 nom_cit, score
+        FROM citoyen
+        ORDER BY score DESC
+    """)).fetchall()
+
+    db.close()
+
+    return [
+        {"nom_cit": row[0], "score": row[1]}
+        for row in result
+    ]
+
 
 @app.get("/vehicules", response_model=list[vehiculeRead])
 def get_interv(db: Session = Depends(get_db)):
     return db.query(vehicule).all()
+
+@app.get("/trajets", response_model=list[trajetRead])
+def get_interv(db: Session = Depends(get_db)):
+    return db.query(trajet).all()
+
+@app.get("/trajets/eco")
+def top_5_trajets_eco():
+    db = SessionLocal()
+
+    result = db.execute(text("""
+        SELECT TOP 5 id_trajet, plaque, origine, dest, duree, eco_c
+        FROM trajet
+        ORDER BY eco_c DESC
+    """)).fetchall()
+
+    db.close()
+
+    return [
+        {"id_trajet": row[0],
+          "plaque": row[1],
+          "origine": row[2],
+          "dest": row[3],
+          "duree": row[4],
+          "eco_c": row[5]
+          }
+        for row in result
+    ]
