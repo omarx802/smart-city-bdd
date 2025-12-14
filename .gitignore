@@ -1,3 +1,57 @@
+# General
+.DS_Store
+Thumbs.db
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+.cache/
+
+# Virtual Environments (ignored as requested)
+venv/
+.venv/
+env/
+.env/
+pip-wheel-metadata/
+
+# Flask/FastAPI
+instance/
+
+# Node / Next.js
+node_modules/
+.next/
+.turbo/
+dist/
+out/
+build/
+.eslintcache
+
+# TypeScript
+*.tsbuildinfo
+
+# Tailwind / PostCSS
+.stylelintcache
+
+# Editor/OS
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*
 
 # dependencies
 /frontend/node_modules
