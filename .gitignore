@@ -15,7 +15,7 @@ __pycache__/
 coverage.xml
 .cache/
 
-# Virtual Environments (ignored as requested)
+# Virtual Environments
 venv/
 .venv/
 env/
