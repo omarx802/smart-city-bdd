@@ -2,11 +2,15 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text, extract
 from src.core.database import SessionLocal 
-from src.models import Capteur, intervention, citoyen, vehicule, trajet
-from src.schemas import CapteurRead, intervRead, citoyenRead, vehiculeRead, trajetRead
+from src.models import Capteur, intervention, citoyen, vehicule, trajet, Pollution
+from src.schemas import CapteurRead, intervRead, citoyenRead, vehiculeRead, trajetRead, PollutionRead
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
-
+from pol_gen import generate_aqi_data
+villes_sousse = [
+    "sousse", "khezama", "akouda", "bouficha", "hammam sousse",
+    "sidi bou ali", "msaken", "enfidha", "kalaa kbira", "sahloul"
+]
 
 app = FastAPI()
 app.add_middleware(
@@ -153,5 +157,50 @@ def top_5_trajets_eco():
           "duree": row[4],
           "eco_c": row[5]
           }
+        for row in result
+    ]
+
+@app.get("/generate_pollution")
+def generate_pollution(db: Session = Depends(get_db)):
+    data = [generate_aqi_data(v) for v in villes_sousse]
+    db.add_all(data)
+    db.commit()
+    return {"message": "Pollution data generated"}
+
+@app.get("/pollution", response_model=list[PollutionRead])
+def get_pollution(db: Session = Depends(get_db)):
+    return db.query(Pollution).all()
+
+@app.get("/pollution/top_aqi")
+def top_5_aqi():
+    db = SessionLocal()
+
+    result = db.execute(text("""
+        SELECT TOP 5 nom_ville, aqi
+        FROM pollution
+        ORDER BY aqi DESC
+    """)).fetchall()
+
+    db.close()
+
+    return [
+        {"nom_ville": row[0], "aqi": row[1]}
+        for row in result
+    ]
+
+@app.get("/pollution/top_dechet")
+def top_5_aqi():
+    db = SessionLocal()
+
+    result = db.execute(text("""
+        SELECT TOP 5 nom_ville, dechet
+        FROM pollution
+        ORDER BY dechet DESC
+    """)).fetchall()
+
+    db.close()
+
+    return [
+        {"nom_ville": row[0], "dechet": row[1]}
         for row in result
     ]

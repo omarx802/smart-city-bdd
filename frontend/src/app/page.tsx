@@ -100,6 +100,35 @@ export default function DashboardPage() {
   fetchTop5();
 }, []);
 
+  const [chartData3, setChartData3] = useState([]);
+
+  useEffect(() => {
+    const fetchTop5 = async () => {
+      const res = await fetch("http://127.0.0.1:8000/pollution/top_aqi");
+      const data = await res.json();
+
+
+    setChartData3(data); // Directement utilisable par Recharts
+  };
+
+  fetchTop5();
+}, []);
+
+  const [chartData4, setChartData4] = useState([]);
+
+  useEffect(() => {
+    const fetchTop5 = async () => {
+      const res = await fetch("http://127.0.0.1:8000/pollution/top_dechet");
+      const data = await res.json();
+
+
+    setChartData4(data); // Directement utilisable par Recharts
+  };
+
+  fetchTop5();
+}, []);
+
+
   const [chartData2, setChartData2] = useState([]);
 
   useEffect(() => {
@@ -173,6 +202,7 @@ useEffect(() => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
 
       <Card>
         <CardHeader>
@@ -342,7 +372,133 @@ useEffect(() => {
         </div>
       </CardFooter>
     </Card>
-  
+
+
+      <Card>
+
+      <CardHeader>
+        <CardTitle>les zones les plus polluées</CardTitle>
+        <CardDescription>January - June 2024</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig1}>
+          <BarChart
+            accessibilityLayer
+            data={chartData3}
+            layout="vertical"
+            margin={{
+              right: 16,
+            }}
+          >
+            <CartesianGrid horizontal={false} />
+            <YAxis
+              dataKey="nom_ville"
+              type="category"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+              hide
+            />
+
+            <XAxis dataKey="aqi" type="number" hide />
+
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent indicator="line" />}
+            />
+            <Bar dataKey="aqi" layout="vertical" radius={4}>
+              <LabelList
+                dataKey="nom_ville"
+                position="insideLeft"
+                offset={8}
+                className="fill-foreground"
+                fontSize={12}
+              />
+              <LabelList
+                dataKey="aqi"
+                position="right"
+                offset={8}
+                className="fill-foreground"
+                fontSize={12}
+              />
+            </Bar>
+
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+      <CardFooter className="flex-col items-start gap-2 text-sm">
+        <div className="flex gap-2 leading-none font-medium">
+          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+        </div>
+        <div className="text-muted-foreground leading-none">
+          Showing total visitors for the last 6 months
+        </div>
+      </CardFooter>
+    </Card>
+
+    <Card>
+      <CardHeader>
+        <CardTitle>les zones les plus polluées (dechet) </CardTitle>
+        <CardDescription>January - June 2024</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig1}>
+          <BarChart
+            accessibilityLayer
+            data={chartData4}
+            layout="vertical"
+            margin={{
+              right: 16,
+            }}
+          >
+            <CartesianGrid horizontal={false} />
+            <YAxis
+              dataKey="nom_ville"
+              type="category"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+              hide
+            />
+
+            <XAxis dataKey="dechet" type="number" hide />
+
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent indicator="line" />}
+            />
+            <Bar dataKey="dechet" layout="vertical" radius={4}>
+              <LabelList
+                dataKey="nom_ville"
+                position="insideLeft"
+                offset={8}
+                className="fill-foreground"
+                fontSize={12}
+              />
+              <LabelList
+                dataKey="dechet"
+                position="right"
+                offset={8}
+                className="fill-foreground"
+                fontSize={12}
+              />
+            </Bar>
+
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+      <CardFooter className="flex-col items-start gap-2 text-sm">
+        <div className="flex gap-2 leading-none font-medium">
+          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+        </div>
+        <div className="text-muted-foreground leading-none">
+          Showing total visitors for the last 6 months
+        </div>
+      </CardFooter>
+    </Card>
+
+    </div>
+
 
 
     </ContentLayout>

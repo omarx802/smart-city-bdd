@@ -60,3 +60,18 @@ class trajetRead(BaseModel):
     eco_c: float | None
     class Config:
         from_attributes = True
+
+class PollutionRead(BaseModel):
+    nom_ville: str
+    aqi: int | None
+    pm25: float| None
+    pm10: float| None
+    no2: float| None
+    co: float| None
+    co2: float| None
+    o3: float| None
+    so2: float| None
+    dechet: float| None
+
+    class Config:
+        from_attributes = True

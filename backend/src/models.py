@@ -53,3 +53,17 @@ class trajet(Base):
     dest = Column(String(50), nullable=False)
     duree = Column(String(50), nullable=False)
     eco_c = Column(DECIMAL(10,2), nullable=False)
+
+class Pollution(Base):
+    __tablename__ = "pollution"
+
+    nom_ville = Column(String, primary_key=True, index=True)
+    aqi = Column(Integer, nullable=False)
+    pm25 = Column(DECIMAL(4,1), nullable=False)
+    pm10 = Column(DECIMAL(4,1), nullable=False)
+    no2 = Column(DECIMAL(4,1), nullable=False)
+    co = Column(DECIMAL(4,1), nullable=False)
+    co2 = Column(DECIMAL(4,1), nullable=False)
+    o3 = Column(DECIMAL(4,1), nullable=False)
+    so2 = Column(DECIMAL(4,1), nullable=False)
+    dechet = Column(Integer, nullable=False)
